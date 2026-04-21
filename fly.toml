@@ -1,0 +1,16 @@
+app = "dart-alert"
+primary_region = "nrt"
+
+[build]
+
+[env]
+  POLL_INTERVAL_SEC = "60"
+  LOOKBACK_DAYS = "1"
+
+[[mounts]]
+  source = "dart_alert_data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+.env
+.env.example
+sent.db
+sent.db-journal
+_probe_*.py
+.git
+.gitignore
+Dockerfile
+.dockerignore
+fly.toml
+README.md

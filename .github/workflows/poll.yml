@@ -1,0 +1,48 @@
+name: dart-alert poll
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: dart-alert-poll
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Restore state (sent.db)
+        uses: actions/cache/restore@v4
+        with:
+          path: sent.db
+          key: dart-alert-db-${{ github.run_id }}
+          restore-keys: dart-alert-db-
+
+      - name: Run poll (one-shot)
+        env:
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_ONCE: "1"
+          LOOKBACK_DAYS: "2"
+        run: python main.py
+
+      - name: Save state (sent.db)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: sent.db
+          key: dart-alert-db-${{ github.run_id }}
